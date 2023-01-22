@@ -1,0 +1,92 @@
+HTML:
+
+<title>JS</title>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="styles.css">
+
+<ul id="list">
+</ul>
+
+<input type="text" id="input">
+<button id="add-button" disabled>Dodaj</button>
+
+<script src="app.js"></script>
+
+
+JS:
+
+const button = document.querySelector('#add-button')
+const input = document.querySelector('#input')
+const list = document.querySelector('#list')
+let text = ''
+
+const addTask = () => {
+  const newTask = `<li>${text}</li>`
+  list.innerHTML = list.innerHTML + newTask
+  input.value = ''
+}
+const checkButton = () => {
+  if (text == '') {
+    button.disabled = true
+  } else {
+    button.disabled = false
+  }
+}
+const markDoneUndone = element => {
+  if (element.classList.contains('done')) {
+    element.classList.remove('done')
+  } else {
+    element.classList.add('done')
+  }
+}
+
+input.addEventListener('keyup', event => {
+  text = event.target.value
+  checkButton()
+})
+
+button.addEventListener('click', () => {
+  addTask()
+})
+
+list.addEventListener('click', event => {
+  markDoneUndone(event.target)
+})
+
+
+CSS:
+
+/* CSS */
+
+.done {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+body {
+  font-family: Tahoma;
+}
+ul {
+  padding: 0;
+}
+li {
+  list-style-type: none;
+  background-color: #e3e3e3;
+  border: 1px solid #cdcdcd;
+  box-shadow: 2px 2px 6px #cdcdcd;
+  border-radius: 8px;
+  padding: 6px;
+  margin: 4px 0;
+}
+button {
+  background-color: #3c973c;
+  color: #fff;
+  border-radius: 8px;
+  border: 0;
+  padding: 8px 12px;
+}
+input {
+  border-radius: 8px;
+  padding: 6px 12px;
+  background-color: #e7e7e7;
+  border: 1px dashed #7c7c7c;
+}
