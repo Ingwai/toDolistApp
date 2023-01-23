@@ -7,14 +7,15 @@ const overlay = document.querySelector('#overlay');
 const btnYes = document.querySelector('#btnYes');
 const btnNo = document.querySelector('#btnNo');
 const cal = document.querySelector('#calendar');
-const inputNewToDo = document.querySelector('#inputNewToDo');
+const inputToDoChange = document.querySelector('#inputToDoChange');
+const legendEdit = document.querySelector('#legend-edit');
 
 let toDoArray = [];
 let toDoDone = [];
 
 input.focus();
 
-if (localStorage.getItem('toDoList')) {
+if (localStorage.getItem('toDoList') || localStorage.getItem('toDoListDone')) {
 	toDoArray = JSON.parse(window.localStorage.getItem('toDoList'));
 	toDoDone = JSON.parse(window.localStorage.getItem('toDoListDone'));
 	toDoArray.forEach(toDoText => createLi(toDoText));
@@ -47,6 +48,8 @@ function createLi(toDoText) {
 }
 
 function deleteItem(item) {
+	console.log(item);
+	// item. === item.textContext
 	item.remove(item);
 	let arr = toDoArray.filter(el => el !== item.textContent);
 	let arrDone = toDoDone.filter(el => el !== item.textContent);
@@ -92,6 +95,14 @@ function doneToDo(e) {
 	item.classList.toggle('done');
 	checkDone(item);
 
+	if (item.classList.contains('done')) {
+		btnEdit.disabled = true;
+		btnEdit.classList.add('empty');
+	} else {
+		btnEdit.disabled = false;
+		btnEdit.classList.remove('empty');
+	}
+
 	item.addEventListener('dblclick', () => {
 		item.classList.contains('done') ? item.classList.add('done') : item.classList.remove('done');
 		addActive();
@@ -107,7 +118,8 @@ function doneToDo(e) {
 	});
 
 	btnEdit.addEventListener('click', () => {
-		inputNewToDo.classList.add('active');
+		inputToDoChange.classList.add('active');
+		legendEdit.classList.add('active');
 		editToDoBox(item);
 	});
 }
@@ -144,15 +156,16 @@ cal.addEventListener('change', () => {
 
 function editToDoBox(item) {
 	let oldToDoText = item.textContent;
-	inputNewToDo.value = item.textContent;
+	inputToDoChange.value = item.textContent;
 
-	inputNewToDo.addEventListener('keypress', e => {
-		if (inputNewToDo.value === '' || toDoArray.includes(inputNewToDo.value)) return;
+	inputToDoChange.addEventListener('keypress', e => {
+		if (inputToDoChange.value === '' || toDoArray.includes(inputToDoChange.value)) return;
 		if (e.key === 'Enter') {
-			inputNewToDo.textContent = inputNewToDo.value;
-			item.textContent = inputNewToDo.textContent;
-			let newToDoText = inputNewToDo.textContent;
-			inputNewToDo.classList.remove('active');
+			inputToDoChange.textContent = inputToDoChange.value;
+			item.textContent = inputToDoChange.textContent;
+			let newToDoText = inputToDoChange.textContent;
+			inputToDoChange.classList.remove('active');
+			legendEdit.classList.remove('active');
 			noActive();
 			item.classList.remove('done');
 			actualisationArrays(oldToDoText, newToDoText);
@@ -163,16 +176,11 @@ function editToDoBox(item) {
 function actualisationArrays(oldToDoText, newToDoText) {
 	let oldIndex = toDoArray.findIndex(el => el === oldToDoText);
 	toDoArray.splice(oldIndex, 1, newToDoText);
-	// let oldIndexDone = toDoDone.filter(el => el === oldToDoText);
-	// toDoDone.splice(oldIndexDone, 1, newToDoText);
 	window.localStorage.setItem('toDoList', JSON.stringify(toDoArray));
-	// window.localStorage.setItem('toDoListDone', JSON.stringify(toDoDone));
 }
 
 // sposób na wymianę 2 liczb w tablicy
 // var ele = Array(10, 20, 300, 40, 50);
-
 // ele[ele.map((x, i) => [i, x]).filter(
 // x => x[1] == 300)[0][0]] = 30
-
 // console.log(ele);

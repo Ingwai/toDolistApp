@@ -24,10 +24,11 @@ body {
 
 #calendar {
 	width: 180px;
+	color: rgb(4, 0, 255);
 }
 
 input {
-	font-family: 'Tahoma', serif;
+	font-family: 'Verdana', sans-serif;
 	padding: 15px;
 	width: 350px;
 	border-radius: 10px;
@@ -53,12 +54,12 @@ button {
 ul {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	/* gap: 1px; */
 }
 
 li {
 	display: inline;
-	font-family: 'Tahoma', serif;
+	font-family: 'Verdana', sans-serif;
 	list-style-type: none;
 	padding: 15px;
 	width: 630px;
@@ -69,14 +70,27 @@ li {
 	box-shadow: 2px 2px 6px #cdcdcd;
 	overflow: auto;
 	position: relative;
+	border-bottom: 1px solid #c7c7c7;
+	border-top: 1px solid #f6f6f6;
+}
+
+li:hover {
+	background-color: rgb(170, 247, 126);
+	transition: 0.3s;
+	box-shadow: inset 0px 2px 3px #b2b2b2;
+	border-top: 1px solid #9d9d9c;
 }
 
 .done {
 	text-decoration: line-through;
-	opacity: 0.7;
-	color: rgb(122, 120, 120);
-	background-color: rgb(248, 192, 192);
+	opacity: 0.3;
+	color: rgb(255, 0, 0);
+	background-color: rgb(247, 183, 183);
 	font-style: italic;
+	transition: 0.3s;
+}
+.done:hover {
+	background-color: rgb(240, 105, 105);
 }
 
 .empty {
@@ -153,12 +167,25 @@ p {
 	background-color: rgb(24, 152, 161);
 }
 
-#inputNewToDo {
+#inputToDoChange {
 	display: none;
 	margin: 20px auto;
-	
 }
 
-#inputNewToDo.active {
+#inputToDoChange.active {
+	display: block;
+}
+
+#legend-remove {
+	margin-top: 20px;
+	font-size: 14px;
+}
+
+#legend-edit {
+	display: none;
+	font-size: 14px;
+}
+
+#legend-edit.active {
 	display: block;
 }
