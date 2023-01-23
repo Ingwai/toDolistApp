@@ -5,6 +5,7 @@ const removeItem = document.querySelector('#removeItem');
 const overlay = document.querySelector('#overlay');
 const btnYes = document.querySelector('#btnYes');
 const btnNo = document.querySelector('#btnNo');
+const cal = document.querySelector('#calendar');
 let toDoArray = [];
 let toDoDone = [];
 
@@ -19,13 +20,18 @@ if (localStorage.getItem('toDoList')) {
 checkInput();
 
 function checkInput() {
-	if (input.value === '') blockedButton();
+	if (input.value === '') blockedButton(true);
 	else addToDo();
 }
 
-function blockedButton() {
-	button.classList.add('empty');
-	button.disabled = true;
+function blockedButton(onOff) {
+	if (onOff === true) {
+		button.classList.add('empty');
+		button.disabled = true;
+	} else {
+		button.classList.remove('empty');
+		button.disabled = false;
+	}
 }
 
 function createLi(toDoText) {
@@ -51,11 +57,10 @@ function deleteItem(item) {
 
 input.addEventListener('keyup', e => {
 	if (e.target.value === '') {
-		blockedButton();
+		blockedButton(true);
 		return;
 	} else {
-		button.classList.remove('empty');
-		button.disabled = false;
+		blockedButton(false);
 	}
 });
 
@@ -65,6 +70,7 @@ function addToDo() {
 	createLi(newItem);
 	toDoArray.push(newItem);
 	input.value = '';
+	cal.value = '';
 	input.focus();
 	window.localStorage.setItem('toDoList', JSON.stringify(toDoArray));
 	checkInput();
@@ -118,4 +124,12 @@ input.addEventListener('keypress', e => {
 		e.preventDefault();
 		addToDo();
 	}
+});
+
+cal.addEventListener('change', () => {
+	let dataText = cal.value;
+	let dataSplit = dataText.split('-');
+	let dataLocal = dataSplit[2] + '-' + dataSplit[1] + '-' + dataSplit[0];
+	input.value = dataLocal + ': ';
+	blockedButton(false);
 });
