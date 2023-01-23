@@ -1,3 +1,4 @@
+'use strict mode';
 const input = document.querySelector('#inputText');
 const button = document.querySelector('#btnAdd');
 const list = document.querySelector('#list');
@@ -6,6 +7,8 @@ const overlay = document.querySelector('#overlay');
 const btnYes = document.querySelector('#btnYes');
 const btnNo = document.querySelector('#btnNo');
 const cal = document.querySelector('#calendar');
+const inputNewToDo = document.querySelector('#inputNewToDo');
+
 let toDoArray = [];
 let toDoDone = [];
 
@@ -38,11 +41,9 @@ function createLi(toDoText) {
 	const li = document.createElement('li');
 	li.textContent = toDoText;
 	list.appendChild(li);
-	let item = document.querySelector('li');
+
 	let filterArray = toDoDone.filter(el => el === li.textContent);
 	filterArray.map(() => li.classList.add('done'));
-	console.log(item);
-	console.log(filterArray);
 }
 
 function deleteItem(item) {
@@ -92,7 +93,7 @@ function doneToDo(e) {
 	checkDone(item);
 
 	item.addEventListener('dblclick', () => {
-		item.classList.add('done');
+		item.classList.contains('done') ? item.classList.add('done') : item.classList.remove('done');
 		addActive();
 	});
 
@@ -103,6 +104,11 @@ function doneToDo(e) {
 
 	btnNo.addEventListener('click', () => {
 		noActive();
+	});
+
+	btnEdit.addEventListener('click', () => {
+		inputNewToDo.classList.add('active');
+		editToDoBox(item);
 	});
 }
 
@@ -117,7 +123,9 @@ function noActive() {
 }
 
 list.addEventListener('click', doneToDo);
+
 button.addEventListener('click', addToDo);
+
 input.addEventListener('keypress', e => {
 	if (input.value === '') return;
 	if (e.key === 'Enter') {
@@ -133,3 +141,38 @@ cal.addEventListener('change', () => {
 	input.value = dataLocal + ': ';
 	blockedButton(false);
 });
+
+function editToDoBox(item) {
+	let oldToDoText = item.textContent;
+	inputNewToDo.value = item.textContent;
+
+	inputNewToDo.addEventListener('keypress', e => {
+		if (inputNewToDo.value === '' || toDoArray.includes(inputNewToDo.value)) return;
+		if (e.key === 'Enter') {
+			inputNewToDo.textContent = inputNewToDo.value;
+			item.textContent = inputNewToDo.textContent;
+			let newToDoText = inputNewToDo.textContent;
+			inputNewToDo.classList.remove('active');
+			noActive();
+			item.classList.remove('done');
+			actualisationArrays(oldToDoText, newToDoText);
+		}
+	});
+}
+
+function actualisationArrays(oldToDoText, newToDoText) {
+	let oldIndex = toDoArray.findIndex(el => el === oldToDoText);
+	toDoArray.splice(oldIndex, 1, newToDoText);
+	// let oldIndexDone = toDoDone.filter(el => el === oldToDoText);
+	// toDoDone.splice(oldIndexDone, 1, newToDoText);
+	window.localStorage.setItem('toDoList', JSON.stringify(toDoArray));
+	// window.localStorage.setItem('toDoListDone', JSON.stringify(toDoDone));
+}
+
+// sposób na wymianę 2 liczb w tablicy
+// var ele = Array(10, 20, 300, 40, 50);
+
+// ele[ele.map((x, i) => [i, x]).filter(
+// x => x[1] == 300)[0][0]] = 30
+
+// console.log(ele);

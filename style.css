@@ -23,7 +23,7 @@ body {
 }
 
 #calendar {
-	width: 180px;	
+	width: 180px;
 }
 
 input {
@@ -67,7 +67,8 @@ li {
 	background-color: rgb(205, 252, 177);
 	font-size: 20px;
 	box-shadow: 2px 2px 6px #cdcdcd;
-	overflow:auto;
+	overflow: auto;
+	position: relative;
 }
 
 .done {
@@ -137,10 +138,27 @@ p {
 	background-color: rgb(141, 13, 34);
 }
 
-#btnEdit {
+.btnEdit {
 	background-color: rgb(29, 192, 204);
+	padding: 8px;
+	position: absolute;
+	top: 12px;
+	right: 10px;
+	border-radius: 8px;
+	font-size: 12px;
+	text-transform: uppercase;
 }
 
-#btnEdit:hover {
+.btnEdit:hover {
 	background-color: rgb(24, 152, 161);
+}
+
+#inputNewToDo {
+	display: none;
+	margin: 20px auto;
+	
+}
+
+#inputNewToDo.active {
+	display: block;
 }
