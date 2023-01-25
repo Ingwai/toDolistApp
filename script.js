@@ -201,7 +201,6 @@ function acceptChanges(item, oldToDoText) {
 
 // funkcja akualizująca notkę i zmieniająca stary wpis na nowy i zapisująca w localStorage i renderująca widok
 function actualisationArrays(oldToDoText, newToDoText) {
-	debugger;
 	let oldIndex = toDoArray.findIndex(el => el == oldToDoText);
 	toDoArray.splice(oldIndex, 1, newToDoText);
 	console.log(oldToDoText, newToDoText, oldIndex, toDoArray);
