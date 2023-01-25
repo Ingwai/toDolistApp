@@ -13,19 +13,26 @@
     <div id="overlay"></div>
     <div id="removeItem">
         <p>Czy jesteś pewien, że chcesz usunąć notatkę?</p>
-        <button id="btnEdit">Edytuj</button>
         <button id="btnYes">TAK</button>
         <button id="btnNo">NIE</button>
-        <p id="legend-remove">Aby usunąć notatkę zaznacz ją na czerwono i kliknij dwukrotnie</p>
-        <input type="text" id="inputToDoChange">
-        <p id="legend-edit">Aby zatwierdzić Edycję wciśnij Enter, aby porzucić kliknij na przycisk NIE</p>
+
     </div>
+
+    <div id="editItem">
+        <input type="text" id="inputToDoChange">
+        <button id="btnAccept">Zmień</button>
+        <button id="btnReject">Odrzuć</button>
+    </div>
+
     <div class="container">
         <div id="box">
             <div id="data">
                 <input type="date" id="calendar">
                 <input type="text" id="inputText">
                 <button id="btnAdd">Dodaj</button>
+                <p id="legend-remove">Aby usunąć notatkę zaznacz ją na czerwono i kliknij dwukrotnie</p>
+                <p id="legend-edit">Aby edytować kliknij zieloną notatkę dwukrotnie. Nie może być dwóch takich samych
+                    wpisów.</p>
             </div>
             <ul id="list">
             </ul>

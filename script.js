@@ -3,17 +3,21 @@ const input = document.querySelector('#inputText');
 const button = document.querySelector('#btnAdd');
 const list = document.querySelector('#list');
 const removeItem = document.querySelector('#removeItem');
+const editItem = document.querySelector('#editItem');
 const overlay = document.querySelector('#overlay');
 const btnYes = document.querySelector('#btnYes');
+const btnAccept = document.querySelector('#btnAccept');
+const btnReject = document.querySelector('#btnReject');
 const btnNo = document.querySelector('#btnNo');
 const cal = document.querySelector('#calendar');
 const inputToDoChange = document.querySelector('#inputToDoChange');
-const legendEdit = document.querySelector('#legend-edit');
-
 let toDoArray = [];
 let toDoDone = [];
 
 input.focus();
+
+// sprawdzanie czy znajduje się dane w localStorage i zaczytywanie ich do aplikacji
+// z 2 tablic: jedna to wszyskie wpisy, 2 to wpisy już wykonane zaznaczone na czerwono
 
 if (localStorage.getItem('toDoList') || localStorage.getItem('toDoListDone')) {
 	toDoArray = JSON.parse(window.localStorage.getItem('toDoList'));
@@ -21,13 +25,14 @@ if (localStorage.getItem('toDoList') || localStorage.getItem('toDoListDone')) {
 	toDoArray.forEach(toDoText => createLi(toDoText));
 }
 
-checkInput();
+checkInput(); //sprawdzenie czy coś jest wpisane w inpucie jeśli nie to jest blokowany button
 
 function checkInput() {
 	if (input.value === '') blockedButton(true);
 	else addToDo();
 }
 
+// funkcja blokująca klawisz
 function blockedButton(onOff) {
 	if (onOff === true) {
 		button.classList.add('empty');
@@ -38,18 +43,20 @@ function blockedButton(onOff) {
 	}
 }
 
+//  funkcja generująca wpis - notatkę
+
 function createLi(toDoText) {
 	const li = document.createElement('li');
 	li.textContent = toDoText;
 	list.appendChild(li);
 
+	// tu filtruje tablice z notatami zaznaczonym na czerowono i po wczytaniu są one zaznaczone jako wykonane
 	let filterArray = toDoDone.filter(el => el === li.textContent);
 	filterArray.map(() => li.classList.add('done'));
 }
 
+// funkcja kasująca dany wpis - notatkę, filtujemy jaki wpis został usunięty i uaktualniamy 2 tablice
 function deleteItem(item) {
-	console.log(item);
-	// item. === item.textContext
 	item.remove(item);
 	let arr = toDoArray.filter(el => el !== item.textContent);
 	let arrDone = toDoDone.filter(el => el !== item.textContent);
@@ -59,6 +66,7 @@ function deleteItem(item) {
 	window.localStorage.setItem('toDoListDone', JSON.stringify(toDoDone));
 }
 
+// funkcja zawierdzająca wpis notatki klawiszem Enter i sprawdzająca czy coś jest wpisane w inpucie
 input.addEventListener('keyup', e => {
 	if (e.target.value === '') {
 		blockedButton(true);
@@ -68,6 +76,7 @@ input.addEventListener('keyup', e => {
 	}
 });
 
+// funkcja dodająca notatkę z inpucie i wysyłająca ją do funkcji tworzącej wpis na liście i zapisująca w tablicy i localStorage
 function addToDo() {
 	let newItem = input.value;
 	if (toDoArray.includes(newItem)) return;
@@ -80,6 +89,7 @@ function addToDo() {
 	checkInput();
 }
 
+// funkcja sprawdzajaca notatkę zaznaczoną na czerwono i zapisująca ją w tablicy i localStorage
 function checkDone(item) {
 	if (item.classList.contains('done')) {
 		toDoDone.push(item.textContent);
@@ -90,62 +100,68 @@ function checkDone(item) {
 	window.localStorage.setItem('toDoListDone', JSON.stringify(toDoDone));
 }
 
+// funkcja tworząca notatkę - wykonano (czerwoną)
 function doneToDo(e) {
 	let item = e.target.closest('li');
 	item.classList.toggle('done');
 	checkDone(item);
-
-	if (item.classList.contains('done')) {
-		btnEdit.disabled = true;
-		btnEdit.classList.add('empty');
-	} else {
-		btnEdit.disabled = false;
-		btnEdit.classList.remove('empty');
-	}
-
+	// jeśli klikniemy dwukrotnie na notatce zielonej to wyskakuj modal z możliwością edycji a jeśli na czerwonej to modal do usunięcia
 	item.addEventListener('dblclick', () => {
-		item.classList.contains('done') ? item.classList.add('done') : item.classList.remove('done');
-		addActive();
+		if (item.classList.contains('done')) {
+			addRemoveModalActive(); //przeniesienie do funkcji włączjącej modal do usuwania notatki
+		} else {
+			addEditModalActive(); //przeniesienie do funkcji włączjącej modal do edycji notatki
+			editToDoBox(item); //funkcja gdzie edytuje się notatkę
+		}
 	});
 
 	btnYes.addEventListener('click', () => {
-		item.className !== 'done' ? null : deleteItem(item);
-		noActive();
+		item.className !== 'done' ? null : deleteItem(item); //funkcja usuwająca notatkę
+		removeModalNoActive(); //gdy klikniemy na przycisk TAk to usuwamy notatkę i modal znika
 	});
 
 	btnNo.addEventListener('click', () => {
-		noActive();
-	});
-
-	btnEdit.addEventListener('click', () => {
-		inputToDoChange.classList.add('active');
-		legendEdit.classList.add('active');
-		editToDoBox(item);
+		removeModalNoActive(); //gdy klikniemy na przycisk Nie modal znika
 	});
 }
 
-function addActive() {
+// funkcja uaktywniająca modal do usuwania notatki
+function addRemoveModalActive() {
 	overlay.classList.add('active');
 	removeItem.classList.add('active');
 }
 
-function noActive() {
+// funkcja do chowania modalu usuwającego notatkę
+function removeModalNoActive() {
 	overlay.classList.remove('active');
 	removeItem.classList.remove('active');
 }
 
-list.addEventListener('click', doneToDo);
+// funkcja uaktywniająca modal do edycji notatki
+function addEditModalActive() {
+	editItem.classList.add('active');
+	overlay.classList.add('active');
+}
 
-button.addEventListener('click', addToDo);
+// funkcja do chowania modalu edytującego notatkę
+function editModalNoActive() {
+	editItem.classList.remove('active');
+	overlay.classList.remove('active');
+}
 
+list.addEventListener('click', doneToDo); //delegacja zdarzeń clik przypisany na element ul
+
+button.addEventListener('click', addToDo); //button zatwierdzjący to co zostało wpisane w inpucie
+
+//zatwierdzenie tego co wpisaliśmy do input poprzez klawisz Enter
 input.addEventListener('keypress', e => {
 	if (input.value === '') return;
 	if (e.key === 'Enter') {
-		e.preventDefault();
 		addToDo();
 	}
 });
 
+//funkcja wywołująca kalkulator i wstawiająca date w pole input
 cal.addEventListener('change', () => {
 	let dataText = cal.value;
 	let dataSplit = dataText.split('-');
@@ -154,29 +170,43 @@ cal.addEventListener('change', () => {
 	blockedButton(false);
 });
 
+// funkcja do edytowania notatki i jej zmiany
 function editToDoBox(item) {
 	let oldToDoText = item.textContent;
-	inputToDoChange.value = item.textContent;
-
+	inputToDoChange.value = oldToDoText;
 	inputToDoChange.addEventListener('keypress', e => {
-		if (inputToDoChange.value === '' || toDoArray.includes(inputToDoChange.value)) return;
 		if (e.key === 'Enter') {
-			inputToDoChange.textContent = inputToDoChange.value;
-			item.textContent = inputToDoChange.textContent;
-			let newToDoText = inputToDoChange.textContent;
-			inputToDoChange.classList.remove('active');
-			legendEdit.classList.remove('active');
-			noActive();
-			item.classList.remove('done');
-			actualisationArrays(oldToDoText, newToDoText);
+			acceptChanges(item, oldToDoText);
 		}
+	});
+
+	btnAccept.addEventListener('click', () => {
+		acceptChanges(item, oldToDoText);
+	});
+
+	btnReject.addEventListener('click', () => {
+		editModalNoActive();
 	});
 }
 
+// funkcja wprowadzająca dane do inputu uaktualniającego notkę
+function acceptChanges(item, oldToDoText) {
+	let newToDoText = inputToDoChange.value;
+	if (newToDoText === '' || toDoArray.includes(newToDoText)) return;
+	item.textContent = newToDoText;
+	console.log(oldToDoText, newToDoText);
+	editModalNoActive();
+	actualisationArrays(oldToDoText, newToDoText);
+}
+
+// funkcja akualizująca notkę i zmieniająca stary wpis na nowy i zapisująca w localStorage i renderująca widok
 function actualisationArrays(oldToDoText, newToDoText) {
-	let oldIndex = toDoArray.findIndex(el => el === oldToDoText);
+	debugger;
+	let oldIndex = toDoArray.findIndex(el => el == oldToDoText);
 	toDoArray.splice(oldIndex, 1, newToDoText);
+	console.log(oldToDoText, newToDoText, oldIndex, toDoArray);
 	window.localStorage.setItem('toDoList', JSON.stringify(toDoArray));
+	location.reload();
 }
 
 // sposób na wymianę 2 liczb w tablicy
