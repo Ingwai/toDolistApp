@@ -51,6 +51,7 @@ function createLi(toDoText) {
 	list.appendChild(li);
 
 	// tu filtruje tablice z notatami zaznaczonym na czerowono i po wczytaniu są one zaznaczone jako wykonane
+	if ((toDoDone = [])) return;
 	let filterArray = toDoDone.filter(el => el === li.textContent);
 	filterArray.map(() => li.classList.add('done'));
 }
